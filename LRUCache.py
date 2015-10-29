@@ -5,11 +5,8 @@ class LRUCache:
         self.size = 0
         self.data = {}
 
-        self.first = None
-        self.last = None
-
-        self.hit = 0
-        self.miss = 0
+        self.first = self.last = None
+        self.hit = self.miss = 0
 
     def put(self, key, value):
         if key in self.data.keys():
@@ -47,10 +44,7 @@ class LRUCache:
         deleted = self.data[key]
 
         if self.size == 1:
-            self.size = 0
-            self.first = None
-            self.last = None
-            del self.data[key]
+            self.clear()
             return True
 
         if self.last == key:
@@ -76,8 +70,7 @@ class LRUCache:
     def clear(self):
         self.size = 0
         self.data = {}
-        self.first = None
-        self.last = None
+        self.first = self.last = None
 
     def __update(self, key, label, value):
         if key in self.data.keys():
