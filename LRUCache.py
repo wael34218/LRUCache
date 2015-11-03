@@ -9,8 +9,9 @@ class LRUCache:
         self.hit = self.miss = 0
 
     def put(self, key, value):
-        if key in self.data.keys():
+        if key in self.data:
             self.__touch(key)
+            self.data[key]["value"] = value
             return self.data[key]
 
         if self.size == self.capacity:
@@ -29,7 +30,7 @@ class LRUCache:
         return self.data[key]
 
     def get(self, key):
-        if key in self.data.keys():
+        if key in self.data:
             self.hit += 1
             self.__touch(key)
             return self.data[key]["value"]
@@ -38,7 +39,7 @@ class LRUCache:
             return False
 
     def purge(self, key):
-        if key not in self.data.keys():
+        if key not in self.data:
             return False
 
         deleted = self.data[key]
@@ -73,13 +74,13 @@ class LRUCache:
         self.first = self.last = None
 
     def __update(self, key, label, value):
-        if key in self.data.keys():
+        if key in self.data:
             temp = self.data[key]
             temp[label] = value
             self.data[key] = temp
 
     def __touch(self, key):
-        if key not in self.data.keys():
+        if key not in self.data:
             return False
 
         if self.first == key:
