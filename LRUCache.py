@@ -51,11 +51,9 @@ class LRUCache:
         if self.last == key:
             self.__update(deleted["newer"], "older", None)
             self.last = deleted["newer"]
-
         elif self.first == key:
             self.__update(deleted["older"], "newer", None)
             self.first = deleted["older"]
-
         else:
             self.__update(deleted["newer"], "older", deleted["older"])
             self.__update(deleted["older"], "older", deleted["newer"])
