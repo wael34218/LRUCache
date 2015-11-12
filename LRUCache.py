@@ -36,7 +36,7 @@ class LRUCache:
             return self.data[key]["value"]
         else:
             self.miss += 1
-            return False
+            return None
 
     def purge(self, key):
         if key not in self.data:
