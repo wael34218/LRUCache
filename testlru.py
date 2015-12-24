@@ -50,6 +50,11 @@ class TestLRUCache(unittest.TestCase):
         res = {"hit": 3, "miss": 3, "percentage": 0.5}
         self.assertEqual(self.test_cache.stats(), res)
 
+    def test_iterable(self):
+        all_data = {(x, y) for x, y in self.test_cache}
+        actual_data = {("1", "one"), ("2", "two"), ("3", "three")}
+        self.assertEqual(all_data, actual_data)
+
 
 if __name__ == '__main__':
     unittest.main()

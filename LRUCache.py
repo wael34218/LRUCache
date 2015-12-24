@@ -97,3 +97,8 @@ class LRUCache:
         self.data[key] = {"value": self.data[key]["value"], "newer": None, "older": self.first}
         self.first = key
         return True
+
+    def __iter__(self):
+        for key, value in self.data.items():
+            yield (key, value["value"])
+        return
