@@ -55,6 +55,14 @@ class TestLRUCache(unittest.TestCase):
         actual_data = {("1", "one"), ("2", "two"), ("3", "three")}
         self.assertEqual(all_data, actual_data)
 
+    def test_contains(self):
+        self.assertTrue("3" in self.test_cache)
+
+    def test_not_contains(self):
+        self.assertFalse("4" in self.test_cache)
+
+    def test_len_n(self):
+        self.assertEqual(len(self.test_cache), 3)
 
 if __name__ == '__main__':
     unittest.main()

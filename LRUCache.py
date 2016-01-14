@@ -3,102 +3,116 @@ class LRUCache:
     def __init__(self, capacity):
         self.capacity = capacity
         self.size = 0
-        self.data = {}
+        self._data = {}
 
         self.first = self.last = None
         self.hit = self.miss = 0
 
     def put(self, key, value):
-        if key in self.data:
-            self.__touch(key)
-            self.data[key]["value"] = value
-            return self.data[key]
+        if key in self._data:
+            self._touch(key)
+            self._data[key]["value"] = value
+            return self._data[key]
 
         if self.size == self.capacity:
             self.purge(self.last)
 
         if self.first is not None:
-            self.__update(self.first, "newer", key)
+            self._update(self.first, "newer", key)
 
         self.size += 1
-        self.data[key] = {"value": value, "newer": None, "older": self.first}
+        self._data[key] = {"value": value, "newer": None, "older": self.first}
 
         self.first = key
         if self.last is None:
             self.last = key
 
-        return self.data[key]
+        return self._data[key]
 
     def get(self, key):
-        if key in self.data:
+        if key in self._data:
             self.hit += 1
-            self.__touch(key)
-            return self.data[key]["value"]
+            self._touch(key)
+            return self._data[key]["value"]
         else:
             self.miss += 1
             return None
 
     def purge(self, key):
-        if key not in self.data:
+        if key not in self._data:
             return False
 
-        deleted = self.data[key]
+        deleted = self._data[key]
 
         if self.size == 1:
             self.clear()
             return True
 
         if self.last == key:
-            self.__update(deleted["newer"], "older", None)
+            self._update(deleted["newer"], "older", None)
             self.last = deleted["newer"]
         elif self.first == key:
-            self.__update(deleted["older"], "newer", None)
+            self._update(deleted["older"], "newer", None)
             self.first = deleted["older"]
         else:
-            self.__update(deleted["newer"], "older", deleted["older"])
-            self.__update(deleted["older"], "older", deleted["newer"])
+            self._update(deleted["newer"], "older", deleted["older"])
+            self._update(deleted["older"], "older", deleted["newer"])
 
         self.size -= 1
-        del self.data[key]
+        del self._data[key]
         return True
 
     def stats(self):
-        percentage = self.hit / (self.hit + self.miss)
+        percentage = self.hit * 1.0 / (self.hit + self.miss)
         return {"hit": self.hit, "miss": self.miss, "percentage": percentage}
 
     def clear(self):
         self.size = 0
-        self.data = {}
+        self._data = {}
         self.first = self.last = None
 
-    def __update(self, key, label, value):
-        if key in self.data:
-            temp = self.data[key]
+    def _update(self, key, label, value):
+        if key in self._data:
+            temp = self._data[key]
             temp[label] = value
-            self.data[key] = temp
+            self._data[key] = temp
 
-    def __touch(self, key):
-        if key not in self.data:
+    def _touch(self, key):
+        if key not in self._data:
             return False
 
         if self.first == key:
             return True
 
-        item = self.data[key]
-        self.__update(self.first, "newer", key)
+        item = self._data[key]
+        self._update(self.first, "newer", key)
 
         if self.last == key:
-            self.__update(item["newer"], "older", None)
+            self._update(item["newer"], "older", None)
             self.last = item["newer"]
         else:
-            self.__update(item["newer"], "older", item["older"])
-            self.__update(item["older"], "newer", item["newer"])
+            self._update(item["newer"], "older", item["older"])
+            self._update(item["older"], "newer", item["newer"])
 
-        self.data[key] = {"value": self.data[key]["value"], "newer": None, "older": self.first}
+        self._data[key] = {"value": self._data[key]["value"], "newer": None, "older": self.first}
         self.first = key
         return True
 
     def __iter__(self):
-        for key, value in self.data.items():
+        for key, value in self._data.items():
             yield (key, value["value"])
         return
+
+    def __contains__(self, item):
+        return item in self._data
+
+    def __len__(self):
+        return len(self._data)
+
+    def __repr__(self):
+        return "LRUCache{}".format(str(list(self.__iter__())))
+
+    def __eq__(self, rhs):
+        if not isinstance(rhs, LRUCache):
+            return NotImplemented
+        return self._data == rhs._data
